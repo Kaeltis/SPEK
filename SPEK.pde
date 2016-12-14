@@ -45,18 +45,14 @@ void setup() {
    }
    map.addMarkers(airportMarkers);
    
-   List<Feature> industrials = GeoJSONReader.loadData(this, "Industrie und Haefen 24h-Pegel L-den.json");
-   List<Marker> industrialMarkers = MapUtils.createSimpleMarkers(industrials);
-   map.addMarkers(industrialMarkers);
-   
    List<Feature> rails = GeoJSONReader.loadData(this, "Schiene Deutsche Bahn 24h-Pegel L-den.json");
    List<Marker> railMarkers = MapUtils.createSimpleMarkers(rails);
    map.addMarkers(railMarkers);
    */
 
-  List<Feature> streets = GeoJSONReader.loadData(this, "test.geojson");
-  List<Marker> streetMarkers = MapUtils.createSimpleMarkers(streets);
-  map.addMarkers(streetMarkers);
+  List<Feature> industrials = GeoJSONReader.loadData(this, "Industrie-Hafen-lden.geojson");
+  List<Marker> industrialMarkers = MapUtils.createSimpleMarkers(industrials);
+  map.addMarkers(industrialMarkers);
 }
 
 void draw() {
