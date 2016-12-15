@@ -16,17 +16,15 @@ void setup() {
   MapUtils.createDefaultEventDispatcher(this, map);
 
   List<Feature> noise = GeoJSONReader.loadData(this, "Industrie-Hafen-lden.geojson");
-  
   List<Marker> noiseMarkers = MapUtils.createSimpleMarkers(noise);
   map.addMarkers(noiseMarkers);
-  
+
   for (Marker marker : noiseMarkers) {
     int dbaLevel = marker.getIntegerProperty("DBA");
     float redValue = map(dbaLevel, 55, 75, 50, 255);
     marker.setColor(color(redValue, 0, 0, 127));
     marker.setStrokeColor(color(1, 0));
   }
-  
 }
 
 void draw() {
