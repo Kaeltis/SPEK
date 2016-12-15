@@ -28,31 +28,34 @@ void setup() {
   map.setPanningRestriction(cologneLocation, 15);
   MapUtils.createDefaultEventDispatcher(this, map);
 
+  List<Feature> railsKH = GeoJSONReader.loadData(this, "Bahn-KVB-HGK-lden_0000.geojson");
+  List<Marker> railKHMarkers = MapUtils.createSimpleMarkers(railsKH);
+  map.addMarkers(railKHMarkers);
+  
   /*
+  List<Marker> railKHMarkers = new ArrayList<Marker>();
+  for (Feature feature : railsKH) {
+    ShapeFeature lineFeature = (ShapeFeature) feature;
 
-   List<Feature> airports = GeoJSONReader.loadData(this, "Flughafen 24h-Pegel L-den.json");
-   List<Marker> airportMarkers = new ArrayList<Marker>();
-   for (Feature feature : airports) {
-   ShapeFeature lineFeature = (ShapeFeature) feature;
-   
-   SimpleLinesMarker m = new SimpleLinesMarker(lineFeature.getLocations());
-   int dba = lineFeature.getIntegerProperty("DBA");
-   float mappedDba = map(dba, 40, 100, 0, 255);
-   int colour = color(44, 91, mappedDba);
-   m.setColor(colour);
-   m.setStrokeWeight(5);
-   airportMarkers.add(m);
-   }
-   map.addMarkers(airportMarkers);
-   
-   List<Feature> rails = GeoJSONReader.loadData(this, "Schiene Deutsche Bahn 24h-Pegel L-den.json");
-   List<Marker> railMarkers = MapUtils.createSimpleMarkers(rails);
-   map.addMarkers(railMarkers);
-   */
+    SimpleLinesMarker m = new SimpleLinesMarker(lineFeature.getLocations());
+    int dba = lineFeature.getIntegerProperty("DBA");
+    float mappedDba = map(dba, 40, 100, 0, 255);
+    int colour = color(44, 91, mappedDba);
+    m.setColor(colour);
+    m.setStrokeWeight(5);
+    railKHMarkers.add(m);
+  }
+  map.addMarkers(railKHMarkers);
+  */
+
+  List<Feature> airports = GeoJSONReader.loadData(this, "Flughafen-lden.geojson");
+  List<Marker> airportMarkers = MapUtils.createSimpleMarkers(airports);
+  map.addMarkers(airportMarkers);
 
   List<Feature> industrials = GeoJSONReader.loadData(this, "Industrie-Hafen-lden.geojson");
   List<Marker> industrialMarkers = MapUtils.createSimpleMarkers(industrials);
   map.addMarkers(industrialMarkers);
+  
 }
 
 void draw() {
