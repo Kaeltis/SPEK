@@ -80,6 +80,6 @@ void generateGreenMarkers(String file) {
 
   for (Marker marker : greenMarkers) {
     marker.setColor(color(0, 200, 0, 127));
-    marker.setStrokeColor(color(1, 0));
+    marker.setStrokeWeight(0);
   }
 }
