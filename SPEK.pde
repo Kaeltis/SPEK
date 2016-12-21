@@ -16,8 +16,13 @@ import de.fhpotsdam.utils.*;
 import java.util.List;
 import org.gicentre.utils.colour.*;
 
+static final boolean DEBUG = true;
+static final int COMPLETE_GENERATOR_NUMBER = 84;
+
 UnfoldingMap map;
 PFont f;
+
+int finishedGeneratorCount;
 
 void setup() {
   size(800, 600, P2D);
@@ -29,28 +34,31 @@ void setup() {
   map.zoomAndPanTo(11, new Location(50.94, 6.95));
   MapUtils.createDefaultEventDispatcher(this, map);
 
+  finishedGeneratorCount = 0;
   startMarkerGenerators();
 }
 
 void draw() {
-  synchronized(map) {
+  background(0);
+
+  if (finishedGeneratorCount == COMPLETE_GENERATOR_NUMBER) {
     map.draw();
+  } else {
+    drawMessage("Please wait while the map is being generated - " + String.format("%.0f", map(finishedGeneratorCount, 0, COMPLETE_GENERATOR_NUMBER, 0, 100)) + "%");
   }
 }
 
 void keyPressed() {
   switch(key) {
   case ' ':
-    synchronized(map) {
-      map.getDefaultMarkerManager().toggleDrawing();
-    }
+    map.getDefaultMarkerManager().toggleDrawing();
     break;
   }
 }
 
 void drawMessage(String message) {
   textFont(f, 16);
-  fill(0);
+  fill(255);
   text(message, 10, 25);
 }
 
@@ -110,15 +118,14 @@ class MarkerGenerator extends Thread {
   }
 
   void generateNoiseMarkers(String file) {
-    println("[DEBUG] Generating Markers for " + file);
+    if (DEBUG)
+      println("[DEBUG] Generating Markers for " + file);
 
     List<Feature> noise = GeoJSONReader.loadData(SPEK.this, file);
 
     List<Marker> noiseMarkers = MapUtils.createSimpleMarkers(noise);
 
-    synchronized (map) {
-      map.addMarkers(noiseMarkers);
-    }
+    map.addMarkers(noiseMarkers);
 
     for (Marker marker : noiseMarkers) {
       int dbaLevel = marker.getIntegerProperty("DBA");
@@ -127,6 +134,8 @@ class MarkerGenerator extends Thread {
       marker.setColor((myCTable.findColour(125-dbaLevel)&0x00FFFFFF)+(127<<24));
       marker.setStrokeWeight(0);
     }
+
+    finishedGeneratorCount++;
   }
 
   void generateAllGreenMarkers() {
@@ -139,18 +148,19 @@ class MarkerGenerator extends Thread {
   }
 
   void generateGreenMarkers(String file) {
-    println("[DEBUG] Generating Markers for " + file);
+    if (DEBUG)
+      println("[DEBUG] Generating Markers for " + file);
 
     List<Feature> green = GeoJSONReader.loadData(SPEK.this, file);
     List<Marker> greenMarkers = MapUtils.createSimpleMarkers(green);
 
-    synchronized (map) {
-      map.addMarkers(greenMarkers);
-    }
+    map.addMarkers(greenMarkers);
 
     for (Marker marker : greenMarkers) {
       marker.setColor(color(0, 200, 0, 127));
       marker.setStrokeWeight(0);
     }
+
+    finishedGeneratorCount++;
   }
 }
