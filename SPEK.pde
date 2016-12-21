@@ -17,10 +17,13 @@ import java.util.List;
 import org.gicentre.utils.colour.*;
 
 UnfoldingMap map;
+PFont f;
 
 void setup() {
   size(800, 600, P2D);
   smooth();
+
+  f = createFont("Arial Bold", 16, true);
 
   map = new UnfoldingMap(this);
   map.zoomAndPanTo(11, new Location(50.94, 6.95));
@@ -43,6 +46,12 @@ void keyPressed() {
     }
     break;
   }
+}
+
+void drawMessage(String message) {
+  textFont(f, 16);
+  fill(0);
+  text(message, 10, 25);
 }
 
 void startMarkerGenerators() {
