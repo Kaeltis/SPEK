@@ -29,7 +29,7 @@ void setup() {
   debugDisplay = new DebugDisplay(this, map, eventDispatcher, 10, 10);
 
   generateNoiseMarkers("Industrie-Hafen-lden.geojson");
-  
+
   generateGreenMarkers("Gruen-Biotopflaechen.geojson");
   generateGreenMarkers("Gruen-ForsteigeneFlaechen.geojson");
   generateGreenMarkers("Gruen-Gruenanlagen.geojson");
@@ -63,22 +63,10 @@ void generateNoiseMarkers(String file) {
 
   for (Marker marker : noiseMarkers) {
     int dbaLevel = marker.getIntegerProperty("DBA");
-    //float redValue = map(dbaLevel, 50, 75, 50, 255);
-    ColourTable myCTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_BU, 10, 100);
-    // marker.setColor(color(redValue, 0, 0, 127));
-    marker.setColor(myCTable.findColour(dbaLevel));
-    marker.setStrokeColor(myCTable.findColour(dbaLevel)); 
-    // fill(myCTable.findColour(dbaLevel));
-    // stroke(myCTable.findColour(dbaLevel));
-
-
-    /*   float inc = 0;
-     for (float i=0; i<1; i+=inc)
-     {
-     fill(myCTable.findColour(i));
-     stroke(myCTable.findColour(i));
-     //rect(width*i,10,width*inc,50);
-     }*/
+    ColourTable myCTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_BU, 50, 75);
+    // 125-dbaLevel to invert color scheme
+    marker.setColor(myCTable.findColour(125-dbaLevel));
+    marker.setStrokeColor(myCTable.findColour(125-dbaLevel));
   }
 }
 
