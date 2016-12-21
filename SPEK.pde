@@ -17,18 +17,16 @@ import java.util.List;
 import org.gicentre.utils.colour.*;
 
 UnfoldingMap map;
-MarkerGenerator markerGenerator;
 
 void setup() {
   size(800, 600, P2D);
   smooth();
 
   map = new UnfoldingMap(this);
-  map.zoomAndPanTo(10, new Location(50.94, 6.95));
+  map.zoomAndPanTo(11, new Location(50.94, 6.95));
   MapUtils.createDefaultEventDispatcher(this, map);
 
-  markerGenerator = new MarkerGenerator();
-  markerGenerator.start();
+  startMarkerGenerators();
 }
 
 void draw() {
@@ -40,21 +38,48 @@ void draw() {
 void keyPressed() {
   switch(key) {
   case ' ':
-    map.getDefaultMarkerManager().toggleDrawing();
+    synchronized(map) {
+      map.getDefaultMarkerManager().toggleDrawing();
+    }
     break;
   }
 }
 
+void startMarkerGenerators() {
+  for (int i = 1; i <= 6; i++) {
+    new MarkerGenerator(i).start();
+  }
+}
+
 class MarkerGenerator extends Thread {
+  int type;
+
+  public MarkerGenerator(int type) {
+    this.type = type;
+  }
+
   public void run()
   {
-    generateAllGreenMarkers();
-
-    generateStreetNoiseMarkers();
-    generateDBNoiseMarkers();
-    generateKVBandHGKNoiseMarkers();
-    generateNoiseMarkers("Industrie-Hafen-lden.geojson");
-    generateNoiseMarkers("Flughafen-lden.geojson");
+    switch(type) {
+    case 1:
+      generateAllGreenMarkers();
+      break;
+    case 2:
+      generateStreetNoiseMarkers();
+      break;
+    case 3:
+      generateDBNoiseMarkers();
+      break;
+    case 4:
+      generateKVBandHGKNoiseMarkers();
+      break;
+    case 5:
+      generateNoiseMarkers("Industrie-Hafen-lden.geojson");
+      break;
+    case 6:
+      generateNoiseMarkers("Flughafen-lden.geojson");
+      break;
+    }
   }
 
   void generateStreetNoiseMarkers () {
@@ -75,7 +100,7 @@ class MarkerGenerator extends Thread {
     }
   }
 
-  synchronized void generateNoiseMarkers(String file) {
+  void generateNoiseMarkers(String file) {
     println("[DEBUG] Generating Markers for " + file);
 
     List<Feature> noise = GeoJSONReader.loadData(SPEK.this, file);
@@ -104,7 +129,7 @@ class MarkerGenerator extends Thread {
     generateGreenMarkers("Gruen-Spielplaetze.geojson");
   }
 
-  synchronized void generateGreenMarkers(String file) {
+  void generateGreenMarkers(String file) {
     println("[DEBUG] Generating Markers for " + file);
 
     List<Feature> green = GeoJSONReader.loadData(SPEK.this, file);
