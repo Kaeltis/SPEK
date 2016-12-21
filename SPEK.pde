@@ -17,6 +17,7 @@ import java.util.List;
 import org.gicentre.utils.colour.*;
 
 UnfoldingMap map;
+MarkerGenerator markerGenerator;
 
 void setup() {
   size(800, 600, P2D);
@@ -26,26 +27,14 @@ void setup() {
   map.zoomAndPanTo(10, new Location(50.94, 6.95));
   MapUtils.createDefaultEventDispatcher(this, map);
 
-  thread("generateAllGreenMarkers");
-
-  thread("generateStreetNoiseMarkers");
-  thread("generateDBNoiseMarkers");
-  thread("generateKVBandHGKNoiseMarkers");
-  generateNoiseMarkers("Industrie-Hafen-lden.geojson");
-  generateNoiseMarkers("Flughafen-lden.geojson");
+  markerGenerator = new MarkerGenerator();
+  markerGenerator.start();
 }
 
-synchronized void draw() {
-  map.draw();
-}
-
-void mouseMoved() {
-  /*
-  Marker marker = map.getFirstHitMarker(mouseX, mouseY);
-   if (marker != null) {
-   println(marker.getIntegerProperty("DBA"));
-   }
-   */
+void draw() {
+  synchronized(map) {
+    map.draw();
+  }
 }
 
 void keyPressed() {
@@ -56,61 +45,78 @@ void keyPressed() {
   }
 }
 
-void generateStreetNoiseMarkers () {
-  for (int i = 0; i <= 60; i++) {
-    generateNoiseMarkers("Strasse-lden_"+ String.format("%04d", i) +".geojson");
+class MarkerGenerator extends Thread {
+  public void run()
+  {
+    generateAllGreenMarkers();
+
+    generateStreetNoiseMarkers();
+    generateDBNoiseMarkers();
+    generateKVBandHGKNoiseMarkers();
+    generateNoiseMarkers("Industrie-Hafen-lden.geojson");
+    generateNoiseMarkers("Flughafen-lden.geojson");
   }
-}
 
-void generateDBNoiseMarkers () {
-  for (int i = 0; i <= 12; i++) {
-    generateNoiseMarkers("Bahn-DB-lden_"+ String.format("%04d", i) +".geojson");
+  void generateStreetNoiseMarkers () {
+    for (int i = 0; i <= 60; i++) {
+      generateNoiseMarkers("Strasse-lden_"+ String.format("%04d", i) +".geojson");
+    }
   }
-}
 
-void generateKVBandHGKNoiseMarkers () {
-  for (int i = 0; i <= 1; i++) {
-    generateNoiseMarkers("Bahn-KVB-HGK-lden_"+ String.format("%04d", i) +".geojson");
+  void generateDBNoiseMarkers () {
+    for (int i = 0; i <= 12; i++) {
+      generateNoiseMarkers("Bahn-DB-lden_"+ String.format("%04d", i) +".geojson");
+    }
   }
-}
 
-synchronized void generateNoiseMarkers(String file) {
-  println("[DEBUG] Generating Markers for " + file);
-
-  List<Feature> noise = GeoJSONReader.loadData(this, file);
-
-  List<Marker> noiseMarkers = MapUtils.createSimpleMarkers(noise);
-
-  map.addMarkers(noiseMarkers);
-
-  for (Marker marker : noiseMarkers) {
-    int dbaLevel = marker.getIntegerProperty("DBA");
-    ColourTable myCTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_BU, 50, 75);
-    // 125-dbaLevel to invert color scheme, also add 127 alpha
-    marker.setColor((myCTable.findColour(125-dbaLevel)&0x00FFFFFF)+(127<<24));
-    marker.setStrokeWeight(0);
+  void generateKVBandHGKNoiseMarkers () {
+    for (int i = 0; i <= 1; i++) {
+      generateNoiseMarkers("Bahn-KVB-HGK-lden_"+ String.format("%04d", i) +".geojson");
+    }
   }
-}
 
-void generateAllGreenMarkers() {
-  generateGreenMarkers("Gruen-Biotopflaechen.geojson");
-  generateGreenMarkers("Gruen-ForsteigeneFlaechen.geojson");
-  generateGreenMarkers("Gruen-Gruenanlagen.geojson");
-  generateGreenMarkers("Gruen-Kleingaerten.geojson");
-  generateGreenMarkers("Gruen-Sondergruenflaechen.geojson");
-  generateGreenMarkers("Gruen-Spielplaetze.geojson");
-}
+  synchronized void generateNoiseMarkers(String file) {
+    println("[DEBUG] Generating Markers for " + file);
 
-synchronized void generateGreenMarkers(String file) {
-  println("[DEBUG] Generating Markers for " + file);
+    List<Feature> noise = GeoJSONReader.loadData(SPEK.this, file);
 
-  List<Feature> green = GeoJSONReader.loadData(this, file);
-  List<Marker> greenMarkers = MapUtils.createSimpleMarkers(green);
+    List<Marker> noiseMarkers = MapUtils.createSimpleMarkers(noise);
 
-  map.addMarkers(greenMarkers);
+    synchronized (map) {
+      map.addMarkers(noiseMarkers);
+    }
 
-  for (Marker marker : greenMarkers) {
-    marker.setColor(color(0, 200, 0, 127));
-    marker.setStrokeWeight(0);
+    for (Marker marker : noiseMarkers) {
+      int dbaLevel = marker.getIntegerProperty("DBA");
+      ColourTable myCTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_BU, 50, 75);
+      // 125-dbaLevel to invert color scheme, also add 127 alpha
+      marker.setColor((myCTable.findColour(125-dbaLevel)&0x00FFFFFF)+(127<<24));
+      marker.setStrokeWeight(0);
+    }
+  }
+
+  void generateAllGreenMarkers() {
+    generateGreenMarkers("Gruen-Biotopflaechen.geojson");
+    generateGreenMarkers("Gruen-ForsteigeneFlaechen.geojson");
+    generateGreenMarkers("Gruen-Gruenanlagen.geojson");
+    generateGreenMarkers("Gruen-Kleingaerten.geojson");
+    generateGreenMarkers("Gruen-Sondergruenflaechen.geojson");
+    generateGreenMarkers("Gruen-Spielplaetze.geojson");
+  }
+
+  synchronized void generateGreenMarkers(String file) {
+    println("[DEBUG] Generating Markers for " + file);
+
+    List<Feature> green = GeoJSONReader.loadData(SPEK.this, file);
+    List<Marker> greenMarkers = MapUtils.createSimpleMarkers(green);
+
+    synchronized (map) {
+      map.addMarkers(greenMarkers);
+    }
+
+    for (Marker marker : greenMarkers) {
+      marker.setColor(color(0, 200, 0, 127));
+      marker.setStrokeWeight(0);
+    }
   }
 }
