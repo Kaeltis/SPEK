@@ -43,10 +43,12 @@ void draw() {
 }
 
 void mouseMoved() {
+  /*
   Marker marker = map.getFirstHitMarker(mouseX, mouseY);
-  if (marker != null) {
-    println(marker.getIntegerProperty("DBA"));
-  }
+   if (marker != null) {
+   println(marker.getIntegerProperty("DBA"));
+   }
+   */
 }
 
 void keyPressed() {
@@ -64,9 +66,10 @@ void generateNoiseMarkers(String file) {
   for (Marker marker : noiseMarkers) {
     int dbaLevel = marker.getIntegerProperty("DBA");
     ColourTable myCTable = ColourTable.getPresetColourTable(ColourTable.RD_YL_BU, 50, 75);
-    // 125-dbaLevel to invert color scheme
-    marker.setColor(myCTable.findColour(125-dbaLevel));
-    marker.setStrokeColor(myCTable.findColour(125-dbaLevel));
+    // 125-dbaLevel to invert color scheme, also add 127 alpha
+    marker.setColor((myCTable.findColour(125-dbaLevel)&0x00FFFFFF)+(127<<24));
+    marker.setStrokeWeight(0);
+    //marker.setStrokeColor(myCTable.findColour(125-dbaLevel));
   }
 }
 
