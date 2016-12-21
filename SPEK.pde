@@ -17,7 +17,7 @@ import java.util.List;
 import org.gicentre.utils.colour.*;
 
 static final boolean DEBUG = true;
-static final int COMPLETE_GENERATOR_NUMBER = 84;
+static final int COMPLETE_GENERATOR_COUNT = 84;
 
 UnfoldingMap map;
 PFont f;
@@ -41,10 +41,10 @@ void setup() {
 void draw() {
   background(0);
 
-  if (finishedGeneratorCount == COMPLETE_GENERATOR_NUMBER) {
+  if (finishedGeneratorCount == COMPLETE_GENERATOR_COUNT) {
     map.draw();
   } else {
-    drawMessage("Please wait while the map is being generated - " + String.format("%.0f", map(finishedGeneratorCount, 0, COMPLETE_GENERATOR_NUMBER, 0, 100)) + "%");
+    drawMessage("Please wait while the map is being generated - " + String.format("%.0f", map(finishedGeneratorCount, 0, COMPLETE_GENERATOR_COUNT, 0, 100)) + "%");
   }
 }
 
