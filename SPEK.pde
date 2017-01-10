@@ -17,7 +17,7 @@ import java.util.List;
 import org.gicentre.utils.colour.*;
 
 static final boolean DEBUG = true;
-static final int COMPLETE_GENERATOR_COUNT = 84;
+static final int COMPLETE_GENERATOR_COUNT = 6;
 
 UnfoldingMap map;
 PFont f;
@@ -79,41 +79,23 @@ class MarkerGenerator extends Thread {
   {
     switch(type) {
     case 1:
-      generateAllGreenMarkers();
+      generateGreenMarkers("Gruen.json");
       break;
     case 2:
-      generateStreetNoiseMarkers();
+      generateNoiseMarkers("Strasse.json");
       break;
     case 3:
-      generateDBNoiseMarkers();
+      generateNoiseMarkers("Bahn-DB.json");
       break;
     case 4:
-      generateKVBandHGKNoiseMarkers();
+      generateNoiseMarkers("Bahn-KVB-HGK.json");
       break;
     case 5:
-      generateNoiseMarkers("Industrie-Hafen-lden.geojson");
+      generateNoiseMarkers("Industrie-Hafen.json");
       break;
     case 6:
-      generateNoiseMarkers("Flughafen-lden.geojson");
+      generateNoiseMarkers("Flughafen.json");
       break;
-    }
-  }
-
-  void generateStreetNoiseMarkers () {
-    for (int i = 0; i <= 60; i++) {
-      generateNoiseMarkers("Strasse-lden_"+ String.format("%04d", i) +".geojson");
-    }
-  }
-
-  void generateDBNoiseMarkers () {
-    for (int i = 0; i <= 12; i++) {
-      generateNoiseMarkers("Bahn-DB-lden_"+ String.format("%04d", i) +".geojson");
-    }
-  }
-
-  void generateKVBandHGKNoiseMarkers () {
-    for (int i = 0; i <= 1; i++) {
-      generateNoiseMarkers("Bahn-KVB-HGK-lden_"+ String.format("%04d", i) +".geojson");
     }
   }
 
@@ -135,16 +117,9 @@ class MarkerGenerator extends Thread {
       marker.setStrokeWeight(0);
     }
 
+    if (DEBUG)
+      println("[DEBUG] Finished Generating Markers for " + file);
     finishedGeneratorCount++;
-  }
-
-  void generateAllGreenMarkers() {
-    generateGreenMarkers("Gruen-Biotopflaechen.geojson");
-    generateGreenMarkers("Gruen-ForsteigeneFlaechen.geojson");
-    generateGreenMarkers("Gruen-Gruenanlagen.geojson");
-    generateGreenMarkers("Gruen-Kleingaerten.geojson");
-    generateGreenMarkers("Gruen-Sondergruenflaechen.geojson");
-    generateGreenMarkers("Gruen-Spielplaetze.geojson");
   }
 
   void generateGreenMarkers(String file) {
@@ -161,6 +136,8 @@ class MarkerGenerator extends Thread {
       marker.setStrokeWeight(0);
     }
 
+    if (DEBUG)
+      println("[DEBUG] Finished Generating Markers for " + file);
     finishedGeneratorCount++;
   }
 }
