@@ -19,6 +19,7 @@ import de.fhpotsdam.unfolding.utils.*;
 import de.fhpotsdam.utils.*;
 import java.util.List;
 import org.gicentre.utils.colour.*;
+import javax.swing.JOptionPane.*;
 
 static final boolean DEBUG = true;
 static final int COMPLETE_GENERATOR_COUNT = 6;
@@ -37,6 +38,7 @@ boolean secondShow = false;
 ControlP5 controlP5;
 int messageBoxResult = -1;
 ControlGroup messageBox;
+ControlGroup detailBox;
 
 EventDispatcher eventDispatcher;
 
@@ -212,6 +214,7 @@ void mouseClicked() {
     //mapOverview.zoomAndPanToFit(gruenFlaechenName);
     gruenFlaechenName.setColor(color(0, 200, 0, 127));
     //createMessageBox();
+    createDetailBox(name);
   } else {
     // Deselect all other markers
     for (Marker marker : mapDetail.getMarkers()) {
@@ -219,6 +222,22 @@ void mouseClicked() {
       showMapOverview = false;
     }
   }
+}
+
+void createDetailBox(String name) {
+  
+  detailBox = controlP5.addGroup("detailBox", width/2+100, 180, 200);
+  detailBox.setBackgroundHeight(300);
+  detailBox.setBackgroundColor(color(255, 255));
+  detailBox.hideBar();
+
+  // add a TextLabel to the messageBox.
+  Textlabel GruenflaecheDetails = controlP5.addTextlabel("messageBoxLabel", "Details", 20, 20);
+  GruenflaecheDetails.setColor(0);
+  GruenflaecheDetails.moveTo(messageBox);
+  
+  PieChart chart = new PieChart(controlP5, detailBox, "percentChart", name, 50.0, 50.0, 100, 100);
+  //chart.moveTo(detailBox);
 }
 
 /*void createMessageBox() { 
