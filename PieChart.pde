@@ -54,13 +54,23 @@ public class PieChart extends Chart {
       JSONArray geometry = parseGeometry(data);
       for (int l = 0; l < geometry.length(); l++) {
         try {
-          allCoordinatesGreen.add(geometry.getJSONArray(l));
+          JSONArray coordinatesArray = geometry.getJSONArray(l);
+          for (int i = 0; i < coordinatesArray.length(); i++) {
+            if (coordinatesArray.getJSONObject(i).has(name)) {
+              allCoordinatesGreen.add(coordinatesArray);
+            }
+          }
         }
         catch(Exception e) {
         }
       }
-    } else if (data.has(name)) {
-      allCoordinatesGreen.add(data.getJSONArray(name));
+    } else {
+      JSONObject feature = data.getJSONObject("features");
+      JSONObject geometry = feature.getJSONObject("geometry");
+      if (geometry.has(name)) {
+        JSONArray coordinates = geometry.getJSONArray("properties");
+        allCoordinatesGreen.add(coordinates);
+      }
     }
 
     return coordinatesGreen.length();
